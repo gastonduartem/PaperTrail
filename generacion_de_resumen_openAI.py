@@ -13,7 +13,7 @@ client = OpenAI(
 
 model = "deepseek/deepseek-r1"
 stream = False  # or False
-max_tokens = 512
+max_tokens = 900
 def respuesta_ia(ruta_pdf):
     global texto
     texto = ""
@@ -33,7 +33,13 @@ def respuesta_ia(ruta_pdf):
             },
             {
                 "role": "user",
-                "content": f"Puedes resumir brevemente este archivo pdf, en un maximo de 3 parrafos y en terminos sensillos: \n{texto_pdf}",
+                "content": f"""Como un experto en resúmenes de documentos, por favor, realiza un resumen conciso del archivo PDF que te proporcionaré.
+                              Instrucciones:
+                              - Coloca el titulo principal del documento al inicio 
+                              - El resumen debe contener un máximo de 3 párrafos.
+                              - Utiliza un lenguaje sencillo y claro, evitando comentarios adicionales o juicios de valor.
+                              - Asegúrate de captar los puntos clave y la esencia del contenido del documento.
+                              Tu tarea es clarificar la información de manera accesible para cualquier lector. \n{texto_pdf}""",
             }
         ],
         stream=stream,
@@ -48,3 +54,6 @@ def respuesta_ia(ruta_pdf):
         respuesta_limpia = re.sub(r"<think>.*?</think>", "", respuesta, flags=re.DOTALL).strip()
   
     return respuesta_limpia 
+
+rp =respuesta_ia("documento.pdf")
+print(rp)
