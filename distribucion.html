@@ -1,0 +1,162 @@
+<!-- 
+
+Samuel Barboza – Back-end & arXiv Integration
+
+Objetivo principal: Construir la lógica que consulte la API de arXiv, procese la respuesta y la exponga a través de vistas de Django.
+Responsabilidades detalladas:
+
+    Inicialización del proyecto
+
+        Crear el proyecto Django y la app papers.
+
+        Configurar el entorno virtual, dependencias básicas y variables de entorno (clave de arXiv, OpenAI, SendGrid).
+
+    Modelo de datos y lógica
+
+        Definir (si es necesario) un modelo sencillo para almacenar temporalmente metadatos de los papers consultados.
+
+        Implementar la función que haga la petición HTTP a la API de arXiv, parseando el XML/JSON para extraer título, autores, enlace al PDF y DOI.
+
+    Vistas y URLs
+
+        Crear la vista list_papers(request) que acepte un parámetro GET area (e.g. ?area=physics) y devuelva los 5 últimos preprints de esa área.
+
+        Renderizar los datos en el template de Django, pasando un contexto con la lista de papers.
+
+    Calidad de código & tests
+
+        Añadir lógica de manejo de errores (timeout, respuestas vacías, rate limit).
+
+        Escribir al menos un par de tests unitarios para asegurar que, dada una respuesta tipo, la función de parsing extrae correctamente los campos.
+
+    Colaboración
+
+        Mantener comunicación constante con Persona B, para asegurarse de que el formato de datos (IDs de paper, campos JSON) coincida con lo que necesitan los resúmenes.
+
+        Crear un branch específico (feature/arxiv-integration) y hacer PR temprano para feedback.
+Sebastian Mujica – Generación de resúmenes con OpenAI
+
+Objetivo principal: Encadenar la llamada a la API de OpenAI para producir bullet-points concisos a partir de la metadata de un paper.
+Responsabilidades detalladas:
+
+    Configuración inicial
+
+        Instalar la librería oficial de OpenAI y añadir la clave en settings.py o env.
+
+        Crear un módulo summary_service.py donde ubicar toda la lógica de generación de texto.
+
+    Pipeline de generación
+
+        Definir la función generate_summary(title, abstract) que:
+
+            Construya el prompt óptimo para solicitar “5 bullet-points que resuman el siguiente abstract”.
+
+            Envíe la petición a la API, reciba la respuesta y extraiga sólo la lista de bullets.
+
+        Implementar un mecanismo de cacheo en memoria (por ejemplo un diccionario Python) para no repetir llamadas si ya existe un resumen para ese paper durante la sesión.
+
+    Vistas y endpoints
+
+        Crear la vista summary_view(request, paper_id) que reciba un POST con el ID del paper, llame a generate_summary y retorne JSON con los bullets.
+
+        Manejar estados de “generando” y errores (rate limit de OpenAI, inputs vacíos).
+
+    Calidad de resúmenes
+
+        Probar con varios abstracts reales de arXiv para ajustar el prompt y obtener bullets claros, evitando redundancias.
+
+        Documentar en el README ejemplos de prompts y las respuestas más útiles.
+
+    Colaboración
+
+        Trabajar de la mano con Persona C para definir el formato del JSON que espera el frontend (clave bullets, lista de strings).
+
+        Participar en pair-programming con Persona A para validar que paper_id coincide con lo que genera la API de arXiv.
+
+Matias Espinola – Front-end & Experiencia de Usuario
+
+Objetivo principal: Crear la interfaz limpia y funcional que permita al usuario seleccionar el área, ver los papers, generar resúmenes y disparar el envío de newsletter.
+Responsabilidades detalladas:
+
+    Estructura de la interfaz
+
+        Diseñar el template base de Django con un dropdown para seleccionar el area y un contenedor donde se mostrará la lista de 5 papers.
+
+        Crear un bloque repetible (e.g. dentro de un <ul>) para cada paper, que incluya título, autores, enlace al PDF y botones “Generar resumen” y “Copiar DOI”.
+
+    JavaScript mínimo
+
+        Implementar escuchas (addEventListener) para:
+
+            Capturar el click en “Generar resumen” y hacer fetch POST a /papers/<id>/summary/.
+
+            Mostrar un spinner o mensaje “Generando…” mientras llega la respuesta.
+
+            Renderizar los bullets recibidos bajo el título del paper.
+
+        Botón “Enviar newsletter” que haga un POST a /send-newsletter/ y muestre confirmación de envío.
+
+    Estilos y usabilidad
+
+        Asegurar que el UI sea responsive: se vea bien en pantallas de laptop y tablet.
+
+        Usar una paleta de colores neutra y tipografía legible (p. ej. Roboto o Inter).
+
+        Mostrar mensajes claros de error (e.g. “No se pudo generar resumen, intenta de nuevo”).
+
+    Colaboración
+
+        Sincronizar con Persona A la estructura de las vistas y la ruta exacta de los endpoints.
+
+        Ajustar el tiempo de spinner/animaciones en base al rendimiento real de las APIs.
+
+Ivan Ortiz – Envío inmediato de Newsletter con SendGrid
+
+Objetivo principal: Implementar el mecanismo que, con un solo clic, recoja los 5 papers y sus resúmenes ya generados y los envíe por email al usuario de prueba.
+Responsabilidades detalladas:
+
+    Configuración de SendGrid
+
+        Instalar el SDK de SendGrid y añadir la API Key en variables de entorno.
+
+        Verificar el dominio o sandbox en la cuenta de SendGrid para poder enviar correos de prueba.
+
+    Plantilla de email
+
+        Crear un template HTML muy simple (puede ser un string en Python) que itere sobre los papers:
+
+    <h1>PaperTrail Daily Digest</h1>
+    <ul>
+      {% for paper in papers %}
+        <li>
+          <strong>{{ paper.title }}</strong><br>
+          {{ paper.bullets|join("<br>")|safe }}<br>
+          <a href="{{ paper.pdf_url }}">Leer en arXiv</a>
+        </li>
+      {% endfor %}
+    </ul>
+
+    Asegurarse de que el HTML funcione bien en clientes de correo comunes (Gmail, Outlook).
+
+Vista de envío
+
+    Crear la vista send_newsletter_view(request) que coja del contexto los 5 papers con sus bullets y dispare el envío usando SendGrid.
+
+    Retornar JSON con { status: "enviado" } o mensaje de error en caso de fallo SMTP.
+
+Pruebas y feedback
+
+    Enviar un correo de prueba a una cuenta de equipo (o usar un mail trap) para confirmar diseño y legibilidad.
+
+    Manejar errores comunes: falta de summaries, lista vacía o claves mal formateadas.
+
+Colaboración
+
+    Trabajar con Persona A para recibir la lista de papers + bullets desde la misma vista o función helper.
+
+    Comunicar a Persona C el estado del envío para mostrar feedback en la UI.
+
+
+    Gaston Duarte - Unir todo el proyecto
+
+-->
