@@ -6,15 +6,22 @@
 </head>
 <body>
     <h1>Últimos papers de arXiv</h1>
-    <ul>
+
+    {% if papers %}
+      <ul>
         {% for paper in papers %}
-            <li>
-                <strong>{{ paper.title }}</strong><br>
-                Autores: {{ paper.authors | join(', ') }}<br>
-                <a href="{{ paper.pdf_url }}" target="_blank">📄 Ver PDF</a><br>
-                DOI: {{ paper.doi }}
-            </li>
+          <li>
+            <strong>{{ paper.title }}</strong><br>
+            Autores: {{ paper.authors | join(', ') }}<br>
+            <a href="{{ paper.pdf_url }}" target="_blank">📄 Ver PDF</a><br>
+            DOI: {{ paper.doi }}
+          </li>
         {% endfor %}
-    </ul>
+      </ul>
+    {% else %}
+      <p>No se encontraron papers para el área 
+         <em>{{ request.args.get('area', 'physics') }}</em>.
+      </p>
+    {% endif %}
 </body>
 </html>
