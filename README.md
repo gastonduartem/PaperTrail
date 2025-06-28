@@ -19,7 +19,7 @@ Una aplicación web ligera en Flask que te envía (al instante) un boletín con 
 |--------------------|----------------------------------------------------|
 | **Backend**        | Python 3.8+, Flask, python-dotenv                  |
 | **PDF / Texto**    | PyMuPDF (`fitz`), requests                         |
-| **IA**             | OpenAI SDK (o Hugging Face Transformers local)     |
+| **IA**             | OpenAI SDK (utilizado con Novita.ai                |
 | **Email**          | SendGrid API Client **o** `smtplib` / Gmail SMTP   |
 | **Templates**      | Jinja2                                             |
 | **Control de versiones** | Git / GitHub                              |
