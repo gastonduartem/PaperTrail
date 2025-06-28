@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PaperTrail - Confirmación</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-r from-blue-100 via-white to-blue-100 min-h-screen flex items-center justify-center p-6">
+  <section class="bg-white shadow-2xl rounded-2xl max-w-2xl w-full p-10 space-y-8">
+    <!-- confirmacion de suscripcion -->
+    <div class="text-center">
+      <h1 class="text-4xl font-extrabold text-blue-700">Suscripcion exitosa</h1>
+    </div>
+    <!-- DATOS DE LA SUSCRIPCIÓN -->
+    <div class="space-y-6">
+
+      <!-- datos con los que se sucribieron -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del usuario</label>
+        <div class="w-full border border-gray-300 rounded-lg py-3 px-4 text-lg text-gray-800 shadow-sm">
+          {{ nombre }}
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Correo electronico</label>
+        <div class="w-full border border-gray-300 rounded-lg py-3 px-4 text-lg text-gray-800 shadow-sm">
+          {{ email }}
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de noticias</label>
+        <div class="w-full border border-gray-300 rounded-lg py-3 px-4 text-lg text-gray-800 shadow-sm">
+          {{ tipo_noticia }}
+        </div>
+      </div>
+    </div>
+    <!-- mensaje final-->
+    <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+      <p class="text-green-700 text-lg font-medium">
+        ¡Gracias por suscribirte! Comenzaras a recibir noticias muy pronto en tu correo electronico.
+      </p>
+    </div>
+    <!-- boton para volver a la pagina de datos -->
+    <div class="text-center">
+      <a href="/" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105">
+        Volver al inicio
+      </a>
+    </div>
+  </section>
+</body>
+</html>
