@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Últimos papers</title>
+</head>
+<body>
+    <h1>Últimos papers de arXiv</h1>
+    <ul>
+        {% for paper in papers %}
+            <li>
+                <strong>{{ paper.title }}</strong><br>
+                Autores: {{ paper.authors | join(', ') }}<br>
+                <a href="{{ paper.pdf_url }}" target="_blank">📄 Ver PDF</a><br>
+                DOI: {{ paper.doi }}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
